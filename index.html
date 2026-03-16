@@ -1,0 +1,54 @@
+const player = document.getElementById("player");
+const spikes = document.querySelectorAll(".spike");
+
+let velocity = 0;
+let gravity = 0.6;
+let jumping = false;
+
+document.addEventListener("keydown", e => {
+
+    if(e.code === "Space" && !jumping){
+        velocity = 12;
+        jumping = true;
+    }
+
+});
+
+function gameLoop(){
+
+    velocity -= gravity;
+
+    let bottom = parseFloat(getComputedStyle(player).bottom);
+    bottom += velocity;
+
+    if(bottom <= 0){
+        bottom = 0;
+        jumping = false;
+    }
+
+    player.style.bottom = bottom + "px";
+
+    spikes.forEach(spike => {
+
+        let left = parseFloat(spike.style.left);
+        left -= 6;
+        spike.style.left = left + "px";
+
+        let playerRect = player.getBoundingClientRect();
+        let spikeRect = spike.getBoundingClientRect();
+
+        if(
+            playerRect.right > spikeRect.left &&
+            playerRect.left < spikeRect.right &&
+            playerRect.bottom > spikeRect.top
+        ){
+            alert("Game Over!");
+            location.reload();
+        }
+
+    });
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
